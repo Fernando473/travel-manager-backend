@@ -1,7 +1,7 @@
-package com.conecta.travelmanager.infrastructure.config.filters;
+package com.conecta.travelmanager.infrastructure.utils.filters;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.conecta.travelmanager.infrastructure.config.jwt.JwtUtils;
+import com.conecta.travelmanager.infrastructure.utils.jwt.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

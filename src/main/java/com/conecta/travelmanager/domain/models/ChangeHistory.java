@@ -22,10 +22,7 @@ public class ChangeHistory {
     @JoinColumn(name = "user_id", nullable = false)
     private UserClient user;
 
-    private String changeDescription;
-
+    @Column(nullable = false)
     private LocalDateTime changeDate;
-
-
 
 }

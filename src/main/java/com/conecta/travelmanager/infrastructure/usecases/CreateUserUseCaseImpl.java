@@ -6,9 +6,11 @@ import com.conecta.travelmanager.domain.models.Role;
 import com.conecta.travelmanager.domain.models.UserClient;
 import com.conecta.travelmanager.domain.repositories.RoleRepository;
 import com.conecta.travelmanager.domain.repositories.UserClientRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class CreateUserUseCaseImpl implements UserCreateUseCase {
@@ -21,6 +23,7 @@ public class CreateUserUseCaseImpl implements UserCreateUseCase {
     }
 
     @Override
+    @Transactional
     public UserClient execute(UserClient userClient, Role role) {
         Role existingRole = roleRepository.findByName(role.getName())
                 .orElseGet(() -> {
@@ -32,9 +35,11 @@ public class CreateUserUseCaseImpl implements UserCreateUseCase {
         if (userClient.getRoles() == null) {
             userClient.setRoles(new HashSet<>());
         }
+
         userClient.getRoles().add(existingRole);
 
         return userClientRepository.create(userClient);
     }
+
 
 }

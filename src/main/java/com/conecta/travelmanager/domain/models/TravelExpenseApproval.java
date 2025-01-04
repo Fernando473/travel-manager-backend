@@ -22,7 +22,7 @@ public class TravelExpenseApproval {
     @ManyToOne
     private TravelExpense travelExpense;
 
-    @Column
+    @Column(nullable = false)
     private LocalDateTime approvalDate;
 
     @Enumerated(EnumType.STRING)

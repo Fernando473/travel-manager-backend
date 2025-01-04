@@ -24,4 +24,9 @@ public class UserClientRepositoryImpl implements UserClientRepository {
     public UserClient create(UserClient userClient) {
         return this.jpaUserClientRepository.save(userClient);
     }
+
+    @Override
+    public Optional<UserClient> findByMail(String email) {
+        return this.jpaUserClientRepository.findByEmail(email);
+    }
 }

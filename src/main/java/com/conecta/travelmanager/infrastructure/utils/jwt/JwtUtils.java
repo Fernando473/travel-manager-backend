@@ -1,4 +1,4 @@
-package com.conecta.travelmanager.infrastructure.config.jwt;
+package com.conecta.travelmanager.infrastructure.utils.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -24,7 +24,7 @@ public class JwtUtils {
     @Value("${security.jwt.user.generator}")
     private String userGenerator;
 
-    public String createToken(Authentication authentication) {
+    public String generateToken(Authentication authentication) {
         Algorithm algorithm = Algorithm.HMAC256(this.privateKey);
 
         String username = authentication.getPrincipal().toString();
