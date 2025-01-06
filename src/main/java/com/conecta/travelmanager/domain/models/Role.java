@@ -6,6 +6,7 @@ import jakarta.xml.bind.annotation.XmlAttribute;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -26,5 +27,24 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     private Set<UserClient> userClientSet = new HashSet<>();
 
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + roleId +
+                ", name='" + name + '\'' +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Role)) return false;
+        Role role = (Role) o;
+        return Objects.equals(roleId, role.roleId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roleId);
+    }
 }

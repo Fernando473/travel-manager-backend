@@ -1,10 +1,13 @@
 package com.conecta.travelmanager.infrastructure.repositories.user;
 
+import com.conecta.travelmanager.domain.models.Role;
 import com.conecta.travelmanager.domain.models.UserClient;
 import com.conecta.travelmanager.domain.repositories.UserClientRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserClientRepositoryImpl implements UserClientRepository {
@@ -28,5 +31,15 @@ public class UserClientRepositoryImpl implements UserClientRepository {
     @Override
     public Optional<UserClient> findByMail(String email) {
         return this.jpaUserClientRepository.findByEmail(email);
+    }
+
+    @Override
+    public List<String> findRoleNamesByEmail(String email) {
+        return this.jpaUserClientRepository.findRoleNamesByEmail(email);
+    }
+
+    @Override
+    public Set<Role> findRolesByUser(String email) {
+        return this.jpaUserClientRepository.findRolesByEmail(email);
     }
 }

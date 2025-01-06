@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -24,22 +25,24 @@ public class CreateUserUseCaseImpl implements UserCreateUseCase {
 
     @Override
     @Transactional
-    public UserClient execute(UserClient userClient, Role role) {
-        Role existingRole = roleRepository.findByName(role.getName())
-                .orElseGet(() -> {
-                    Role newRole = new Role();
-                    newRole.setName(role.getName());
-                    return roleRepository.create(newRole);
-                });
-
+    public UserClient execute(UserClient userClient, List<Role> roles) {
         if (userClient.getRoles() == null) {
             userClient.setRoles(new HashSet<>());
         }
 
-        userClient.getRoles().add(existingRole);
+        for (Role role : roles) {
+            Role existingRole = roleRepository.findByName(role.getName())
+                    .orElseGet(() -> {
+                        Role newRole = new Role();
+                        newRole.setName(role.getName());
+                        return roleRepository.create(newRole);
+                    });
+
+            userClient.getRoles().add(existingRole);
+        }
 
         return userClientRepository.create(userClient);
     }
-
-
 }
+
+

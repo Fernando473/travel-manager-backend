@@ -1,6 +1,7 @@
 package com.conecta.travelmanager.domain.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +24,8 @@ public class UserClient {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
+    @Email
     private String email;
 
     @Column(nullable = false)
@@ -39,6 +41,14 @@ public class UserClient {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-
+    @Override
+    public String toString() {
+        return "UserClient{" +
+                "id=" + userId +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                // No incluir roles en toString para evitar la inicialización lazy
+                '}';
+    }
 }
 

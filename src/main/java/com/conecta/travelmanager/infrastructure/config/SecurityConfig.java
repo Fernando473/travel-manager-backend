@@ -33,7 +33,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig   {
+public class SecurityConfig {
     @Autowired
     JwtUtils jwtUtils;
 
@@ -51,8 +51,14 @@ public class SecurityConfig   {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AuthenticationProvider authenticationProvider) throws Exception {
-        return httpSecurity.cors().and().csrf(AbstractHttpConfigurer::disable).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(http -> {
-            // EndPoints publicos
+        return httpSecurity.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+            configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            configuration.setAllowedHeaders(List.of("*"));
+            configuration.setAllowCredentials(true);
+            return configuration;
+        })).csrf(AbstractHttpConfigurer::disable).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(http -> {
             http.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
             http.requestMatchers(HttpMethod.GET, "/auth/**").permitAll();
             http.requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll();
@@ -61,6 +67,8 @@ public class SecurityConfig   {
 
             // EndPoints Privados
             http.requestMatchers("/users/**").authenticated();
+            http.requestMatchers("/users/**").authenticated();
+            http.requestMatchers("/expenses/**").authenticated();
 //                    http.requestMatchers(HttpMethod.POST, "/method/post").authenticated();
 //                    http.requestMatchers(HttpMethod.DELETE, "/method/delete").authenticated();
 //                    http.requestMatchers(HttpMethod.PUT, "/method/put").authenticated();
@@ -72,9 +80,9 @@ public class SecurityConfig   {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

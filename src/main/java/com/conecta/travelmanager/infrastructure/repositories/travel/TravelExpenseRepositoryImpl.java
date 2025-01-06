@@ -1,6 +1,7 @@
 package com.conecta.travelmanager.infrastructure.repositories.travel;
 
 import com.conecta.travelmanager.domain.models.TravelExpense;
+import com.conecta.travelmanager.domain.models.UserClient;
 import com.conecta.travelmanager.domain.repositories.TravelExpenseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
@@ -57,6 +58,11 @@ public class TravelExpenseRepositoryImpl implements TravelExpenseRepository {
             throw new IllegalArgumentException("Entity with this id already exists");
         }
         return this.jpaTravelExpenseRepository.save(travelExpense);
+    }
+
+    @Override
+    public List<TravelExpense> findByUserClient(UserClient userClient) {
+        return this.jpaTravelExpenseRepository.findByRegisteredUser(userClient);
     }
 
 }

@@ -1,6 +1,5 @@
 package com.conecta.travelmanager.infrastructure.services;
 
-import com.conecta.travelmanager.application.exceptions.NotFoundEntityException;
 import com.conecta.travelmanager.domain.models.UserClient;
 import com.conecta.travelmanager.domain.repositories.UserClientRepository;
 import com.conecta.travelmanager.infrastructure.dto.AuthLoginRequest;
@@ -15,10 +14,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,21 +33,26 @@ public class UserDetailServiceImpl implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) {
-        UserClient userEntity = null;
-        try {
-            userEntity = this.userRepository.findByMail(username).orElseThrow(() -> new NotFoundEntityException("User " + username + " does not exists"));
-        } catch (NotFoundEntityException e) {
-            throw new RuntimeException(e);
-        }
-        Collection<? extends GrantedAuthority> authorities = userEntity.getRoles()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_".concat(role.getName().name())))
-                .collect(Collectors.toSet());
 
-        return new User(userEntity.getEmail(), userEntity.getPassword(), true, true, true, true, authorities);
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserClient userEntity = userRepository.findByMail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        List<String> roleNames = userRepository.findRoleNamesByEmail(username);
+
+        for (String roleName : roleNames) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
+        }
+
+        return new User(
+                userEntity.getEmail(),
+                userEntity.getPassword(),
+                true, true, true, true,
+                authorities
+        );
     }
+
     public AuthResponse loginUser(AuthLoginRequest authLoginRequest) {
 
         String username = authLoginRequest.email();
@@ -57,15 +62,14 @@ public class UserDetailServiceImpl implements UserDetailsService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String accessToken = jwtUtils.generateToken(authentication);
-        AuthResponse authResponse = new AuthResponse(username, "User loged succesfully", accessToken, true);
-        return authResponse;
+        return new AuthResponse(username, "User loged succesfully", accessToken, true);
     }
 
     public Authentication authenticate(String username, String password) {
         UserDetails userDetails = this.loadUserByUsername(username);
 
         if (userDetails == null) {
-            throw new BadCredentialsException(String.format("Invalid username or password"));
+            throw new BadCredentialsException("Invalid username or password");
         }
 
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {

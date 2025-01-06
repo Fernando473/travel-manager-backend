@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 public class TravelExpense {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long travelExpenseEntityId;
 
     @Enumerated(EnumType.STRING)
